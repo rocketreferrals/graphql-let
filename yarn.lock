@@ -2863,7 +2863,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:17.0.3":
+"@types/react@npm:*":
   version: 17.0.3
   resolution: "@types/react@npm:17.0.3"
   dependencies:
@@ -2871,6 +2871,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: d29f2a33ed69fae9d9f42f8b39b40352e3209eb821f827d566330adfdffb48d2dc730982356cd50a7fda6171e6bc7deca793f7b105c95fce615a45ab313ecf41
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:17.0.18":
+  version: 17.0.18
+  resolution: "@types/react@npm:17.0.18"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: 0b3d5fe0466b57c5539169671e29c4bdad2e2cf5b3eea25d443845d0153b2ddfbe0ef6d017f2f0a7ae49732d6fd14db189f9578ba0629790b896abe3a3ee44f3
   languageName: node
   linkType: hard
 
@@ -7582,7 +7593,7 @@ fsevents@^1.2.7:
     "@types/minimist": 1.2.2
     "@types/node": 15.6.0
     "@types/prettier": 2.3.0
-    "@types/react": 17.0.3
+    "@types/react": 17.0.18
     "@types/react-dom": 17.0.9
     "@types/rimraf": 3.0.1
     "@types/wait-on": 5.3.1
