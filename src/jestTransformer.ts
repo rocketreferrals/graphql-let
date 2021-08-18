@@ -25,7 +25,7 @@ const jestTransformer: Transformer = {
     return createHash(fileData + filename + configString + 'graphql-let');
   },
   process(input, filePath, jestConfig, transformOptions) {
-    const { rootDir: cwd } = jestConfig;
+    const { rootDir: cwd } = jestConfig.config;
     const { configFile, subsequentTransformer } = getOption(jestConfig);
     const [config, configHash] = loadConfigSync(cwd, configFile);
     const { execContext } = createExecContextSync(cwd, config, configHash);
