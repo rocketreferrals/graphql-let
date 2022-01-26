@@ -113,7 +113,9 @@ export function appendLiteralAndLoadContextForTsSources(
     const fileNode = parse(sourceContent, parserOption);
     traverse(fileNode, {
       Program(programPath: NodePath<t.Program>) {
-        const { callExpressionPathPairs } = visitFromProgramPath(programPath);
+        const { callExpressionPathPairs } = visitFromProgramPath(
+          programPath as any,
+        );
 
         appendLiteralAndLoadCodegenContext(
           callExpressionPathPairs,

@@ -35,7 +35,7 @@ export interface GraphQLLetLoaderOptions {
 }
 
 function parseOptions(ctx: loader.LoaderContext): GraphQLLetLoaderOptions {
-  const options = getOptions(ctx);
+  const options = getOptions(ctx as any);
 
   validate(optionsSchema, options);
 
@@ -98,7 +98,7 @@ const processLoaderForSources = memoize(
     }
 
     replaceCallExpressions(
-      programPath,
+      programPath as any,
       sourceFullPath,
       callExpressionPathPairs,
       codegenContext,

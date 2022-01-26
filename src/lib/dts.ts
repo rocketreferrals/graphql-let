@@ -3,7 +3,7 @@ import { parse } from '@babel/parser';
 import traverse from '@babel/traverse';
 import { File, stringLiteral } from '@babel/types';
 import makeDir from 'make-dir';
-import { dirname, relative } from 'path';
+import { dirname, join, relative } from 'path';
 import slash from 'slash';
 import {
   CompilerOptions,
@@ -37,6 +37,7 @@ function fixDtsImportPaths(
   context: CodegenContext,
   dtsAST: File,
   schemaDtsFullPath: string,
+  typeInjectEntrypointDir: string,
 ) {
   const { dtsFullPath, type } = context;
   const relPathToSchema = slash(
@@ -54,7 +55,7 @@ function fixDtsImportPaths(
         switch (type) {
           case 'document-import':
             path.node.source = stringLiteral(
-              'graphql-let/__generated__/__types__',
+              join(typeInjectEntrypointDir, '__generated__/__types__'),
             );
             break;
           case 'gql-call':
@@ -74,6 +75,7 @@ function decorateDts(
   context: CodegenContext,
   dtsContent: string,
   schemaDtsFullPath: string,
+  typeInjectEntrypointDir: string,
 ) {
   const { type } = context;
   const dtsAST = parse(dtsContent, parserOption);
@@ -84,7 +86,12 @@ function decorateDts(
       appendObjectExport(dtsAST);
     case 'document-import':
       // XXX: Ugly way to fix import paths
-      fixDtsImportPaths(context, dtsAST, schemaDtsFullPath);
+      fixDtsImportPaths(
+        context,
+        dtsAST,
+        schemaDtsFullPath,
+        typeInjectEntrypointDir,
+      );
   }
 
   const { code } = generator(dtsAST);
@@ -197,6 +204,10 @@ export async function processDtsForContext(
     codegenContext.map(({ tsxFullPath }) => tsxFullPath),
   );
 
+  const typeInjectEntrypointDir = dirname(
+    execContext.config.typeInjectEntrypoint,
+  );
+
   const {
     dtsFullPath: schemaDtsFullPath,
     // tsxFullPath: schemaTsxFullPath,
@@ -206,7 +217,12 @@ export async function processDtsForContext(
   for (const [i, dtsContent] of dtsContents.entries()) {
     const ctx = codegenContext[i];
     const { dtsFullPath, gqlHash } = ctx!;
-    let content = decorateDts(ctx!, dtsContent, schemaDtsFullPath);
+    let content = decorateDts(
+      ctx!,
+      dtsContent,
+      schemaDtsFullPath,
+      typeInjectEntrypointDir,
+    );
     content = withHash(gqlHash, content);
     await makeDir(dirname(dtsFullPath));
     await writeFile(dtsFullPath, content);
