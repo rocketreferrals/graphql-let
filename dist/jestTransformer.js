@@ -11,11 +11,13 @@ function getDefaultExportIfExists(moduleName) {
     const mod = require(moduleName);
     return ((mod === null || mod === void 0 ? void 0 : mod.default) || mod);
 }
-function getOption(jestConfig) {
+function getOption(jestConfig, sourcePath) {
     if (!Array.isArray(jestConfig.transform))
         return {};
-    for (const [, entryPoint, opts] of jestConfig.transform) {
-        if (entryPoint.endsWith('graphql-let/jestTransformer.js'))
+    for (const [reg, entryPoint, opts] of jestConfig.transform) {
+        const regexp = new RegExp(reg);
+        const matches = regexp.test(sourcePath);
+        if (entryPoint.endsWith('graphql-let/jestTransformer.js') && matches)
             return opts;
     }
     return {};
@@ -32,7 +34,7 @@ const jestTransformer = {
         const jestConfig = (_a = __compatJestConfig === null || __compatJestConfig === void 0 ? void 0 : __compatJestConfig.config) !== null && _a !== void 0 ? _a : __compatJestConfig;
         // jest v26 vs v27 changes to support both formats: end
         const { rootDir: cwd } = jestConfig;
-        const { configFile, subsequentTransformer } = getOption(jestConfig);
+        const { configFile, subsequentTransformer } = getOption(jestConfig, sourcePath);
         const [config, configHash] = config_1.loadConfigSync(cwd, configFile);
         const { execContext } = exec_context_1.createExecContextSync(cwd, config, configHash);
         const { tsxFullPath } = paths_1.createPaths(execContext, path_1.relative(cwd, sourcePath));

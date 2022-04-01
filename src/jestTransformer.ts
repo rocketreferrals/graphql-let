@@ -19,10 +19,17 @@ function getDefaultExportIfExists(moduleName: string) {
   return (mod?.default || mod) as typeof mod;
 }
 
-function getOption(jestConfig: ProjectConfig): JestTransformerOptions {
+function getOption(
+  jestConfig: ProjectConfig,
+  sourcePath: string,
+): JestTransformerOptions {
   if (!Array.isArray(jestConfig.transform)) return {};
-  for (const [, entryPoint, opts] of jestConfig.transform) {
-    if (entryPoint.endsWith('graphql-let/jestTransformer.js')) return opts;
+  for (const [reg, entryPoint, opts] of jestConfig.transform) {
+    const regexp = new RegExp(reg);
+    const matches = regexp.test(sourcePath);
+
+    if (entryPoint.endsWith('graphql-let/jestTransformer.js') && matches)
+      return opts;
   }
   return {};
 }
@@ -39,7 +46,10 @@ const jestTransformer: SyncTransformer<JestTransformerOptions> = {
     const jestConfig = __compatJestConfig?.config ?? __compatJestConfig;
     // jest v26 vs v27 changes to support both formats: end
     const { rootDir: cwd } = jestConfig;
-    const { configFile, subsequentTransformer } = getOption(jestConfig);
+    const { configFile, subsequentTransformer } = getOption(
+      jestConfig,
+      sourcePath,
+    );
     const [config, configHash] = loadConfigSync(cwd, configFile);
     const { execContext } = createExecContextSync(cwd, config, configHash);
 
